@@ -175,6 +175,29 @@ Current.account
 
 Not every model needs a database table. Form objects, value objects, operation encapsulations — they all live in `app/models/`. No `app/services/`, no `app/interactors/`.
 
+**Pattern: concern as API gateway + composed POROs.** A thin concern provides a beautiful accessor on the host model, then delegates real work to plain Ruby classes composed together:
+
+```ruby
+# app/models/user/notifyee.rb — thin concern, just the doorway
+module User::Notifyee
+  extend ActiveSupport::Concern
+
+  def notifications
+    @notifications ||= Notifications.new(self)
+  end
+end
+
+# app/models/notifications.rb — PORO, aggregates sub-concerns
+class Notifications
+  def initialize(user) = @user = user
+  def granularity = Granularity.new(self)
+  def schedule    = Schedule.new(self)
+end
+
+# Result: current.user.notifications.granularity.choice
+# Instead of: NotificationGranularityService.new(current.user).call
+```
+
 #### Code comments are a smell (DHH ep.1)
 
 If code needs a comment, extract an **explaining constant** or **explaining method** instead. Place constants near their usage (proximity > ordering).
