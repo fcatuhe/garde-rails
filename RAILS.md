@@ -287,6 +287,9 @@ end
 
 - **Importmap** — no Node, no bundler, no webpack/esbuild.
 - **Propshaft** — no Sprockets.
+  - **No `@import` in CSS.** Propshaft does not process CSS `@import` — they silently fail. No `application.css` manifest file needed (that's a Sprockets convention).
+  - **`stylesheet_link_tag :app`** to bulk-load all CSS files from `app/assets/stylesheets/`. Each file gets its own `<link>` tag.
+  - **`@layer` for ordering.** Declare layer order in `_global.css` (underscore sorts first). Each CSS file wraps its rules in `@layer base { }`, `@layer components { }`, etc.
 - **No jQuery.** Stimulus handles behavior.
 - **CSS:** vanilla CSS (or Dart Sass if configured). No Tailwind unless project specifies it.
 
@@ -339,6 +342,7 @@ end
 ✗ update_attributes             → ✓ update
 ✗ .where(id: x).first           → ✓ .find(x) or .find_by(id: x)
 ✗ Sprockets / Webpacker         → ✓ Propshaft + Importmap
+✗ @import in CSS / application.css manifest → ✓ stylesheet_link_tag :app + @layer
 ✗ Devise / custom auth          → ✓ Rails 8 authentication generator
 ✗ FactoryBot / RSpec            → ✓ Fixtures + Minitest
 ✗ Service objects / app/services → ✓ Model concerns (ALWAYS)
