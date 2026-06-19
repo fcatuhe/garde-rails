@@ -217,6 +217,16 @@ remove_inaccessible_records_later(wait: GRACE_PERIOD_FOR_UNDO)
 - **Validations in models.** Never in controllers.
 - **Scopes** for reusable queries. Class methods for complex queries.
 - **Callbacks:** `after_create_commit`, `after_update_commit`, `after_destroy_commit` — avoid `after_save` when you need specificity. See "Callbacks" section above.
+- **Enums:** When an attribute has a fixed set of expected values, model it as an enum — don't leave it as a plain string column. Prefer string-backed enums: use a string column in the migration, define the mapping with `.index_by(&:itself)`, and add `suffix:` or `prefix:` when it improves readability or avoids collisions.
+
+```ruby
+# migration
+add_column :posts, :status, :string, null: false
+
+# model
+enum :status, %w[draft published archived].index_by(&:itself), suffix: true
+```
+
 - **Encryption:** `encrypts :field` for sensitive data (Active Record Encryption).
 - **No raw SQL.** Use ActiveRecord query interface. Arel when needed.
 
@@ -320,7 +330,7 @@ end
 
 ## Git
 
-- Conventional Commits (`feat|fix|refactor|build|ci|chore|docs|style|perf|test`).
+- Conventional Commits (`feat|fix|ui|content|refactor|infra|deps`).
 - Small, reviewable diffs. One concern per commit.
 - Safe by default — no destructive ops without consent.
 - Never commit/push without explicit request.
